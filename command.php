@@ -7,16 +7,20 @@
  * @author Serge Dzheigalo <jey@tut.by> http://smartliving.ru/
  * @version 1.2
  */
+
 if (isset($_SERVER['HTTP_ORIGIN'])) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Max-Age: 86400');    // cache for 1 day
 }
+
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+    }
+    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
         header("Access-Control-Allow-Headers:{$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+    }
     exit(0);
 }
 
@@ -31,20 +35,9 @@ $session = new session("prj");
 
 include_once("./load_settings.php");
 
-//DebMes("Command received: ".$qry,'debug1');
-
 Define('DEVIDER', 'и');
 
-/*
-$sqlQuery = "SELECT MESSAGE
-               FROM shouts
-              WHERE MEMBER_ID = 0
-              ORDER BY ID DESC
-              LIMIT 1";
-$lastest_word = current(SQLSelectOne($sqlQuery));
-*/
-
-if ($qry != '') { // && $qry != $lastest_word
+if ($qry != '') {
 
     $terminal = gr('terminal');
     if ($terminal) {
@@ -70,7 +63,6 @@ if ($qry != '') { // && $qry != $lastest_word
             }
         }
     }
-
 
     $user_id = 0;
     $username = gr('username');
@@ -136,23 +128,9 @@ if ($qry != '') { // && $qry != $lastest_word
         }
 
         say(htmlspecialchars($qrys[$i]), 0, $user_id, $say_source);
-
-        /*
-        $rec = array();
-        $rec['ROOM_ID']   = (int)$room_id;
-        $rec['MEMBER_ID'] = $user_id;
-        $rec['MESSAGE']   = htmlspecialchars($qrys[$i]);
-        $rec['ADDED']     = date('Y-m-d H:i:s');
-        SQLInsert('shouts', $rec);
-
-        $res = $pt->checkAllPatterns($rec['MEMBER_ID']);
-
-        if (!$res)
-           processCommand($qrys[$i]);
-           */
     }
-    SQLExec('UPDATE terminals SET IS_ONLINE=0 WHERE LATEST_ACTIVITY < (NOW() - INTERVAL 30 MINUTE)');
 
+    SQLExec('UPDATE terminals SET IS_ONLINE=0 WHERE LATEST_ACTIVITY < (NOW() - INTERVAL 30 MINUTE)');
 }
 
 if (!headers_sent()) {
@@ -160,6 +138,7 @@ if (!headers_sent()) {
     header('Content-Type: text/html; charset=utf-8');
     header('Access-Control-Allow-Origin: *');
 }
+
 ?>
 
 <html>
@@ -182,8 +161,8 @@ if (!headers_sent()) {
 
 <form action="?" method="get" name="frmSearch" class="form-inline">
     <div class="form-group">
-    <input type="text" name="qry" value="<?php echo $qry; ?>" speech required x-webkit-speech
-           onspeechchange="startSearch" class="form-control"/>
+        <input type="text" name="qry" value="<?php echo $qry; ?>" speech required x-webkit-speech
+               onspeechchange="startSearch" class="form-control"/>
     </div>
     <div class="form-group">
         <input type="submit" name="Submit" value="Say" class="btn btn-default btn-primary"/>
@@ -198,8 +177,9 @@ if ($qry != '') {
 
 $qry = "1";
 
-if (!$limit)
+if (!$limit) {
     $limit = 20;
+}
 
 $sqlQuery = "SELECT shouts.*, UNIX_TIMESTAMP(shouts.ADDED) as TM, users.NAME
                FROM shouts
@@ -220,8 +200,9 @@ for ($i = 0; $i < $total; $i++) {
         echo "<h2>$latest_date</h2>\n\n";
     }
 
-    if ($res[$i]['MEMBER_ID'] == 0)
+    if ($res[$i]['MEMBER_ID'] == 0) {
         $res[$i]['NAME'] = 'Alice';
+    }
 
     echo date('H:i', $res[$i]['TM']) . ' <b>' . $res[$i]['NAME'] . '</b>: ' . $res[$i]['MESSAGE'] . "<br />";
 }
