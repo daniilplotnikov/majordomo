@@ -15,10 +15,10 @@ include_once("./lib/loader.php");
 startMeasure('TOTAL');
 
 include_once(DIR_MODULES . "application.class.php");
-
 include_once("./load_settings.php");
 include_once(DIR_MODULES . 'backup/backup.class.php');
 
+// Создаем экземпляр класса резервного копирования
 $b = new backup();
 $b->create_backup();
 
@@ -29,4 +29,3 @@ endMeasure('TOTAL');
 
 // print performance report
 performanceReport();
-
